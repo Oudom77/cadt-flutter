@@ -80,7 +80,7 @@ void main() {
               child: Center(
                 child: Text(
                   "Settings",
-                  style: TextStyle(fontSize g: 24, color: Colors.white),
+                  style: TextStyle(fontSize : 24, color: Colors.white),
                 ),
               ),
             ),

@@ -1,84 +1,76 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: Column(
-        children: [
-          Container(
-              height: 100,
-              color: Colors.white,
-          ),
-          Container(
-              height: 400,
-              color: Colors.cyan[900],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 100,
-                  color: Colors.green,
-                ),
-              ),
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: Container(
-                  color: Colors.pink,
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 100,
-                  color: Colors.blue,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-                height: 100,
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 100,
-                  color: Colors.blue,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-                height: 100,
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 100,
-                  color: Colors.blue,
-                ),
-              ),
-            ],
-          ),
-          Container(
-            height: 20,
-            color: Colors.white,
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.pink
-            ),
-          )
-        ],
+class MyHobbies extends StatelessWidget{
+
+  final String title;
+  final IconData icon;
+  final Color background;
+
+  const MyHobbies({
+    super.key, 
+    required this.title, 
+    required this.icon,
+    this.background = Colors.blue, 
+    });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(20),
       ),
-    ),
-  );
+      child: Center(
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsetsGeometry.only(right: 30, left: 20, top: 40, bottom: 40),
+              child: Icon(
+                icon,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.white,
+              )
+            )
+          ],
+        )
+      ),
+    );
+  }
 }
 
 
+void main(){
+
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "My Hobbies"
+          ),
+          backgroundColor: Colors.white,
+        ),
+        body: Container(
+          padding: EdgeInsetsGeometry.all(40),
+          decoration: BoxDecoration(
+            color: Colors.grey[400]
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              MyHobbies(title: "Travelling", icon: Icons.place, background: Colors.green,),
+              MyHobbies(title: "Skating", icon: Icons.skateboarding, background: Colors.grey,),
+            ],
+          ),
+        ),
+      )
+    )
+  );
+}
