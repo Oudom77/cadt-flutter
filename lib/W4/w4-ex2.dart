@@ -36,18 +36,11 @@ class CustomButton extends StatelessWidget{
     this.type = ButtonType.primary, 
     });
 
-  @override
-  Widget build(BuildContext context) {
+  Widget positionCheck (){
+
     if (position == IconPosition.left){
 
-      return Container(
-        padding: EdgeInsets.all(20),
-        margin: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: type.color,
-          borderRadius: BorderRadius.circular(20)
-        ),
-        child: Row(
+      return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon),
@@ -59,18 +52,10 @@ class CustomButton extends StatelessWidget{
               ),
             )
           ],
-        ),
-      );
+        );
     } else {
 
-      return Container(
-        padding: EdgeInsets.all(20),
-        margin: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: type.color,
-          borderRadius: BorderRadius.circular(20)
-        ),
-        child: Row(
+      return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
@@ -82,10 +67,23 @@ class CustomButton extends StatelessWidget{
             SizedBox(width: 10,),
             Icon(icon),
           ],
-        ),
-      );
+        );
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+
+      return Container(
+        padding: EdgeInsets.all(20),
+        margin: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: type.color,
+          borderRadius: BorderRadius.circular(20)
+        ),
+        child: positionCheck()
+      );
+    }
 }
 
 
@@ -106,7 +104,7 @@ void main(){
             children: [
               CustomButton(label: "Submit", icon: Icons.check),
               CustomButton(label: "Time", icon: Icons.access_alarms_sharp, type: ButtonType.secondary, position: IconPosition.right,),
-              CustomButton(label: "Account", icon: Icons.account_circle, type: ButtonType.disabled, position: IconPosition.right,)
+              CustomButton(label: "Account", icon: Icons.account_circle, type: ButtonType.disabled, position: IconPosition.left,)
             ],
           ),
         ),

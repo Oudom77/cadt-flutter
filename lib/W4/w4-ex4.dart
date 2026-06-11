@@ -83,6 +83,32 @@ class WeatherApp extends StatelessWidget {
                 WeatherCard(location: Location.rome),
                 SizedBox(height: 20,),
                 WeatherCard(location: Location.toulouse),
+                SizedBox(height: 20,),
+                Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(20)
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 20,
+                        right: 150,
+                        child: Icon(Icons.sunny)
+                      ),
+                      ListTile(
+                        title: Text("Data", style: TextStyle(fontSize: 24, color: Colors.white)),
+                        subtitle: Text("data", style: TextStyle(color: Colors.white)),
+                        trailing: Text("Blueee", style: TextStyle(fontSize: 36, color: Colors.white)),
+                        leading: CircleAvatar(
+                          radius: 25,
+                          backgroundImage: AssetImage(Location.paris.image)
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -128,7 +154,7 @@ class WeatherCard extends StatelessWidget {
                   height: 250,
                   width: 210,
                   decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
                       begin: Alignment.centerLeft,
                       end: AlignmentGeometry.centerRight,

@@ -43,11 +43,14 @@ class _DiceState extends State<Dice> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(activeDice),
+              GestureDetector(
+                onTap: rollDice,
+                child: Image.asset(activeDice)
+              ),
               SizedBox(height: 20,),
               TextButton(
                 onPressed: rollDice,
-                child: Text(
+                child: const Text(
                   "Roll Dice",
                   style: TextStyle(
                     color: Colors.white,
