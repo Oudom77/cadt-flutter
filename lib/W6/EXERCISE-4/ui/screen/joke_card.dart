@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../data/joke_data.dart';
 import '../../model/joke_model.dart';
 
 Color appColor = Colors.green[300] as Color;
@@ -8,12 +7,13 @@ Color appColor = Colors.green[300] as Color;
 class FavoriteCard extends StatefulWidget {
 
   final JokeModel jokeData;
-  final bool isBest;
-  final Function(bool) isBestChoosen;
+  final bool isFavorite;
+  final int id;
+  final Function(int) changeFavorite;
 
   const FavoriteCard({
     super.key,
-    required this.jokeData, required this.isBestChoosen, required this.isBest
+    required this.jokeData, required this.isFavorite, required this.id, required this.changeFavorite,
   });
 
   @override
@@ -22,26 +22,7 @@ class FavoriteCard extends StatefulWidget {
 
 class _FavoriteCardState extends State<FavoriteCard> {
   
-  bool _isFavorite = false; // Checks for the card
   bool isClicked = false; // Checks to show the card details
-
-
-  void onFavoriteClick() {
-
-    setState(() {
-
-      if (widget.isBest && !(_isFavorite)){
-
-        return;
-
-      } else {
-
-        _isFavorite = !_isFavorite;
-        widget.isBestChoosen(_isFavorite);
-
-      }
-    });
-  }
 
   void showDetails(){
 
@@ -144,10 +125,10 @@ class _FavoriteCardState extends State<FavoriteCard> {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: onFavoriteClick,
+                    onPressed: () => widget.changeFavorite(widget.id),
                     icon: Icon(
-                      _isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: _isFavorite ? Colors.red : Colors.grey,
+                      widget.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: widget.isFavorite ? Colors.red : Colors.grey,
                     )
                   ),
                   IconButton(

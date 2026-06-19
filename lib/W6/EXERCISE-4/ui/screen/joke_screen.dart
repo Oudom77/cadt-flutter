@@ -17,14 +17,27 @@ class JokeScreen extends StatefulWidget {
 
 class _JokeScreenState extends State<JokeScreen> {
 
-  bool isBest = false;
+  int isFavoriteIndex = -1;
+
   List <JokeModel> jokeData = [...jokes];
 
-  void isBestChoosen(bool condition){
+  void isFavorite(int index){
 
     setState(() {
-      isBest = condition;
+      isFavoriteIndex = (isFavoriteIndex == index) ? -1 : index;
     });
+
+  }
+
+  Widget showCard({required int index, required JokeModel jokeData}){
+
+    if (isFavoriteIndex == index){
+
+      return FavoriteCard(jokeData: jokeData, isFavorite: true, id: index, changeFavorite: isFavorite,);
+
+    }
+
+    return FavoriteCard(jokeData: jokeData, isFavorite: false, id: index, changeFavorite: isFavorite,);
 
   }
 
@@ -73,16 +86,16 @@ class _JokeScreenState extends State<JokeScreen> {
                     background: Container(
                       color: Colors.red
                     ),
+                    secondaryBackground: Container(
+                      color: Colors.green,
+                    ),
                     onDismissed: (direction) {
                       setState(() {
                         jokeData.removeAt(index);
+                        isFavoriteIndex = (isFavoriteIndex == index) ? -1 : isFavoriteIndex;
                       });
                     },
-                    child: FavoriteCard(
-                      jokeData: jokeData[index], 
-                      isBestChoosen: isBestChoosen, 
-                      isBest: isBest,
-                    )
+                    child: showCard(index: index, jokeData: jokeData[index])
                   );
 
                 },

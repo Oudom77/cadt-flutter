@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../model/joke_model.dart';
-import './joke_card.dart';
 
 class JokeForm extends StatefulWidget {
 
