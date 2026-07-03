@@ -40,6 +40,8 @@ class _UserScreenState extends State<UserScreen> {
 
     try {
       user = await repository.fetchUser();
+      print(user!.address.city);
+      print(user!.address.geo.lat);
       fetchState = AsyncState.success;
       setState(() {}); // refresh the view
     } on FetchException catch (e) {
