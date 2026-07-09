@@ -48,7 +48,9 @@ class _TodosScreenState extends State<TodosScreen> {
 
     } on RepositoryException catch (e) {
 
-      print(e.message);
+      setState(() {
+        asyncData = AsyncData.error(e.message);
+      });
 
     }
   }
@@ -93,7 +95,9 @@ class _TodosScreenState extends State<TodosScreen> {
 
     } on RepositoryException catch (e){
 
-      print(e.message);
+      setState(() {
+        asyncData = AsyncData.error(e.message);
+      });
 
     }
     
