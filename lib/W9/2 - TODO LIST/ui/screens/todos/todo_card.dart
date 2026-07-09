@@ -62,7 +62,7 @@ class CheckBox extends StatelessWidget {
 
   BoxBorder? get border => null;
   Color? get backbroundColor => checked ? AppTheme.greenColor : Colors.red;
-  Widget? get innerIcon => checked ? Icon(Icons.check, color: Colors.white) : Icon(Icons.cancel_outlined, color: Colors.white);
+  Widget? get innerIcon => checked ? Icon(Icons.check, color: Colors.white) : Icon(Icons.close, color: Colors.white);
 
   @override
   Widget build(BuildContext context) {
