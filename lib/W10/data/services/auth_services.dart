@@ -32,7 +32,7 @@ class AuthenticationService {
 
     if (response.statusCode != 200){
 
-      return false;
+      throw Exception("Error! Status code: ${response.statusCode}");
 
     }
 

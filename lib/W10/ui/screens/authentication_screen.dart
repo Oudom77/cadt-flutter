@@ -18,7 +18,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   void dispose() {
-    
     _usernameTitle.dispose();
     _passwordTitle.dispose();
     super.dispose();
@@ -26,11 +25,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   void _loginIsClicked() async {
 
+    // Check if credentials are valid
     bool isSuccess = await AuthenticationService.instance.login(
       _usernameTitle.text,
       _passwordTitle.text,
     );
 
+    // If valid login
     if (isSuccess) {
 
       widget.onLogin();
