@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../data/services/auth_services.dart';
 
 class ScoresScreen extends StatelessWidget{
 
-  final VoidCallback onLogout;
+  final VoidCallback onLogOut;
 
-  const ScoresScreen({super.key, required this.onLogout});
+  const ScoresScreen({super.key, required this.onLogOut});
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +22,7 @@ class ScoresScreen extends StatelessWidget{
             ),
           ),
           TextButton(
-            onPressed: () => {
-              AuthenticationService.instance.logout(),
-              onLogout(),
-            }, 
+            onPressed: onLogOut, 
             child: Text(
               "Logout"
             )

@@ -1,6 +1,6 @@
 import 'package:app_cadt/W10/data/services/auth_services.dart';
-import 'package:app_cadt/W10/ui/screens/authentication_screen.dart';
-import 'package:app_cadt/W10/ui/screens/scores_screen.dart';
+import './authentication_screen.dart';
+import './scores_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppScreen extends StatefulWidget{
@@ -12,22 +12,33 @@ class AppScreen extends StatefulWidget{
 
 class _AppScreenState extends State<AppScreen> {
 
+  final AuthenticationService _authService = AuthenticationService.instance;
+
+  void onLogOut(){
+
+    setState(() {
+      _authService.session = null;
+    });
+
+  }
+
+  void onLogIn(){
+
+    setState(() {
+      
+    });
+
+  }
+
   Widget get content {
 
     if (AuthenticationService.instance.session == null){
 
-      return AuthenticationScreen(onLogIn: () {  
-        setState(() {});
-      },);
+      return AuthenticationScreen(onLogIn: onLogIn);
 
     }
 
-    return ScoresScreen(
-      onLogout: () {
-        setState(() {});
-      }
-    );
-
+    return ScoresScreen(onLogOut: onLogOut);
   }
 
   @override

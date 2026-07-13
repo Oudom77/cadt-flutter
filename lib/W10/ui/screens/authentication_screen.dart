@@ -1,4 +1,3 @@
-import './scores_screen.dart';
 import 'package:flutter/material.dart';
 import '../../data/services/auth_services.dart';
 
@@ -96,9 +95,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     ),
                     SizedBox(height: 25,),
                     GestureDetector(
-                      onTap: () => {
-                        loginIsClicked(), 
-                      },
+                      onTap: loginIsClicked,
                       child: Container(
                         margin: EdgeInsets.all(10),
                         padding: EdgeInsets.all(10),
