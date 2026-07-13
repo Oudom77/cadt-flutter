@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class ScoresScreen extends StatelessWidget{
 
-  final VoidCallback onLogOut;
+  final VoidCallback onLogout;
 
-  const ScoresScreen({super.key, required this.onLogOut});
+  const ScoresScreen({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ScoresScreen extends StatelessWidget{
             ),
           ),
           TextButton(
-            onPressed: onLogOut, 
+            onPressed: onLogout, 
             child: Text(
               "Logout"
             )

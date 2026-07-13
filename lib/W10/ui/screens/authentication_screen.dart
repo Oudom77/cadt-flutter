@@ -3,9 +3,9 @@ import '../../data/services/auth_services.dart';
 
 class AuthenticationScreen extends StatefulWidget{
 
-  final VoidCallback onLogIn;
+  final VoidCallback onLogin;
 
-  const AuthenticationScreen({super.key, required this.onLogIn});
+  const AuthenticationScreen({super.key, required this.onLogin});
 
 
   @override
@@ -13,19 +13,27 @@ class AuthenticationScreen extends StatefulWidget{
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
-  TextEditingController usernameTitle = TextEditingController();
-  TextEditingController passwordTitle = TextEditingController();
+  final TextEditingController _usernameTitle = TextEditingController();
+  final TextEditingController _passwordTitle = TextEditingController();
 
-  void loginIsClicked() async {
+  @override
+  void dispose() {
+    
+    _usernameTitle.dispose();
+    _passwordTitle.dispose();
+    super.dispose();
+  }
+
+  void _loginIsClicked() async {
 
     bool isSuccess = await AuthenticationService.instance.login(
-      usernameTitle.text,
-      passwordTitle.text,
+      _usernameTitle.text,
+      _passwordTitle.text,
     );
 
     if (isSuccess) {
 
-      widget.onLogIn();
+      widget.onLogin();
 
     }
 
@@ -75,7 +83,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
-                        controller: usernameTitle,
+                        controller: _usernameTitle,
                         decoration: InputDecoration(labelText: "Email/Username", border: InputBorder.none),
                       ),
                     ),
@@ -88,14 +96,14 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
-                        controller: passwordTitle,
+                        controller: _passwordTitle,
                         decoration: InputDecoration(labelText: "Password", border: InputBorder.none),
                         
                       ),
                     ),
                     SizedBox(height: 25,),
                     GestureDetector(
-                      onTap: loginIsClicked,
+                      onTap: _loginIsClicked,
                       child: Container(
                         margin: EdgeInsets.all(10),
                         padding: EdgeInsets.all(10),

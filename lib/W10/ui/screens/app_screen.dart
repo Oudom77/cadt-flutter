@@ -14,39 +14,33 @@ class _AppScreenState extends State<AppScreen> {
 
   final AuthenticationService _authService = AuthenticationService.instance;
 
-  void onLogOut(){
+  void _onLogout(){
 
     setState(() {
-      _authService.session = null;
+      _authService.logout();
     });
 
   }
 
-  void onLogIn(){
+  void _onLogin(){
 
-    setState(() {
-      
-    });
+    setState(() {});
 
   }
 
   Widget get content {
 
-    if (AuthenticationService.instance.session == null){
+    if (_authService.session == null){
 
-      return AuthenticationScreen(onLogIn: onLogIn);
+      return AuthenticationScreen(onLogin: _onLogin);
 
     }
 
-    return ScoresScreen(onLogOut: onLogOut);
+    return ScoresScreen(onLogout: _onLogout);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: content,
-      ),
-    );
+    return content;
   }
 }
