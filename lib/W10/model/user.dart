@@ -1,3 +1,5 @@
+enum UserRole{ admin, student, teacher }
+
 class User {
 
   final String id;
