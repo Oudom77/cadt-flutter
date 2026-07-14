@@ -17,7 +17,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final TextEditingController _passwordTitle = TextEditingController();
   String? usernameError;
   String? passwordError;
-  bool _isLoggingIn = false;
   String? _loginError;
 
   @override
