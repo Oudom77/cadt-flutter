@@ -15,6 +15,8 @@ class AuthenticationScreen extends StatefulWidget{
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final TextEditingController _usernameTitle = TextEditingController();
   final TextEditingController _passwordTitle = TextEditingController();
+  String? usernameError;
+  String? passwordError;
 
   @override
   void dispose() {
@@ -23,18 +25,68 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     super.dispose();
   }
 
+  void _validateUsername(String value){
+
+    final String username = value.trim();
+
+    setState(() {
+      usernameError = (username.isEmpty) ? "Empty username" : null;
+    });
+
+  }
+
+  void _validatePassword(String value){
+
+    final String password = value.trim();
+
+    setState(() {
+      passwordError = (password.isEmpty) ? "Empty password" : null;
+    });
+
+  }
+
+  bool _validateInputs(){
+
+    final String password = _passwordTitle.text.trim();
+    final String username = _usernameTitle.text.trim();
+
+    setState(() {
+      usernameError = (username.isEmpty) ? "Empty username" : null;
+      passwordError = (password.isEmpty) ? "Empty password" : null;
+    });
+
+    bool isValidated = (password.isNotEmpty && username.isNotEmpty) ? true : false;
+
+    return isValidated;
+
+  }
+
   void _loginIsClicked() async {
 
+    if (_validateInputs() == false){
+
+      return;
+
+    }
+
     // Check if credentials are valid
-    bool isSuccess = await AuthenticationService.instance.login(
+    try {
+
+      bool isSuccess = await AuthenticationService.instance.login(
       _usernameTitle.text,
       _passwordTitle.text,
-    );
+      );
 
-    // If valid login
-    if (isSuccess) {
+      // If valid login
+      if (isSuccess) {
 
-      widget.onLogin();
+        widget.onLogin();
+
+      }
+
+    } on Exception catch(e){
+
+      print("$e");
 
     }
 
@@ -78,27 +130,39 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     Container(
                       margin: EdgeInsets.all(10),
                       padding: EdgeInsets.only(left: 10, bottom: 10),
-                      height: 50,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[600]!),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
+                        onChanged: (value) {
+                          _validateUsername(value);
+                        },
                         controller: _usernameTitle,
-                        decoration: InputDecoration(labelText: "Email/Username", border: InputBorder.none),
+                        decoration: InputDecoration(
+                          labelText: "Email/Username", 
+                          errorText: usernameError,
+                          border: InputBorder.none
+                        ),
                       ),
                     ),
                     Container(
                       margin: EdgeInsets.all(10),
                       padding: EdgeInsets.only(left: 10, bottom: 10),
-                      height: 50,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[600]!),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
+                        onChanged: (value) {
+                            _validatePassword(value);
+                        },
                         controller: _passwordTitle,
-                        decoration: InputDecoration(labelText: "Password", border: InputBorder.none),
+                        decoration: InputDecoration(
+                          labelText: "Password", 
+                          errorText: passwordError,
+                          border: InputBorder.none
+                        ),
                         
                       ),
                     ),

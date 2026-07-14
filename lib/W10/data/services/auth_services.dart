@@ -17,33 +17,34 @@ class AuthenticationService {
 
   Future<bool> login(String username, String password) async {
 
-    Uri url = urlBase.replace(path: "login");
+    Uri url = urlBase.replace(path: "login"); //find backend url
 
-    Map<String, dynamic> loginJson = {
+    Map<String, dynamic> loginJson = { //turn username and pw to json
       "username": username,
       "password": password,
     };
 
     http.Response response = await http.post(
       url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(loginJson),
+      headers: {"Content-Type": "application/json"}, //tell the backend this is a json
+      body: jsonEncode(loginJson), //encode json into a json string
     );
 
-    if (response.statusCode != 200){
+    if (response.statusCode != 200){ //check for error
 
       throw Exception("Error! Status code: ${response.statusCode}");
 
     }
 
-    Map<String, dynamic> json = jsonDecode(response.body); //returns a json {"token": ...}
+    Map<String, dynamic> json = jsonDecode(response.body); //returns a json {"token": alkdnfkalndfnaldnfalkjd}
 
     final String token = json["token"]; // token string
 
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token); // decode jwt payload
+    
     final User user = UserDto.fromJson(decodedToken); // use the decoded payload to create User
 
-    final DateTime expiration = user.expiration;
+    final DateTime expiration = user.expiration; // reuse user's expiration
 
     print("Response Body: $json\n\n Token String: $token\n\n Decoded JWT Payload: $decodedToken");
 
@@ -63,9 +64,9 @@ class AuthenticationService {
   }
 }
 
-void main() async {
+// void main() async {
 
-  final success = await AuthenticationService.instance.login("john", "1234");
-  print(success);
+//   final success = await AuthenticationService.instance.login("john", "1234");
+//   print(success);
 
-}
+// }

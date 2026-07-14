@@ -4,6 +4,7 @@ import './scores_screen.dart';
 import 'package:flutter/material.dart';
 import '../../model/scores.dart';
 import '../../data/repositories/scores_repository.dart';
+import '../utils/async_data.dart';
 
 class AppScreen extends StatefulWidget{
   const AppScreen({super.key});
@@ -16,11 +17,12 @@ class _AppScreenState extends State<AppScreen> {
 
   final AuthenticationService _authService = AuthenticationService.instance;
 
-  List<Score>currentList = [];
+  AsyncData<List<Score>> asyncState = AsyncData.notStarted();
 
   void _onLogout(){
 
     setState(() {
+      asyncState = AsyncData.notStarted();
       _authService.logout();
     });
 
@@ -37,24 +39,48 @@ class _AppScreenState extends State<AppScreen> {
     }
 
     String token = session.token;
-    List<Score> scoreList = await ScoresRepository().getScores(token); 
+    try {
 
-    setState(() {
-      currentList = scoreList;
-    });
+      setState(() {
+        asyncState = AsyncData.loading();
+      });
 
+      List<Score> scoreList = await ScoresRepository().getScores(token); 
+
+      setState(() {
+        asyncState = AsyncData.success(scoreList);
+      });
+
+    } on Exception catch(e){
+
+      setState(() {
+        asyncState = AsyncData.error("$e");
+      });
+    }
   }
 
   Widget get content {
 
-    // Display screens based on if session exist (logged in)
-    if (_authService.session == null){
+    switch(asyncState.status) {
 
-      return AuthenticationScreen(onLogin: _onLogin);
+      case AsyncStatus.notStarted:
+        return AuthenticationScreen(onLogin: _onLogin);
+        
+      case AsyncStatus.loading:
+        return CircularProgressIndicator();
 
+      case AsyncStatus.success:
+        return ScoresScreen(onLogout: _onLogout, scoreList: asyncState.value!);
+
+      case AsyncStatus.error:
+        return Scaffold(
+          body: Center(
+            child: Text(
+              "Error No Wifi!!"
+            ),
+          ),
+        );
     }
-
-    return ScoresScreen(onLogout: _onLogout, scoreList: currentList);
   }
 
   @override
