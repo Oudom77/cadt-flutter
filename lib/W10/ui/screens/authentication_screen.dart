@@ -17,6 +17,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final TextEditingController _passwordTitle = TextEditingController();
   String? usernameError;
   String? passwordError;
+  bool _isLoggingIn = false;
+  String? _loginError;
 
   @override
   void dispose() {
@@ -63,6 +65,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   void _loginIsClicked() async {
 
+    _loginError = null;
+
     if (_validateInputs() == false){
 
       return;
@@ -84,9 +88,32 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
       }
 
-    } on Exception catch(e){
+    } on LoginException catch(e){
 
-      print("$e");
+      setState(() {
+        _loginError = e.message;
+      });
+
+    }
+
+  }
+
+  Widget get errorMessage {
+
+    if (_loginError != null){
+
+      return Center(
+        child: Text(
+          "$_loginError",
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.red,
+          ),
+        )
+      );
+    } else {
+
+      return SizedBox(height: 15,);
 
     }
 
@@ -166,7 +193,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         
                       ),
                     ),
-                    SizedBox(height: 25,),
+                    errorMessage,
+                    SizedBox(height: 10,),
                     GestureDetector(
                       onTap: _loginIsClicked,
                       child: Container(

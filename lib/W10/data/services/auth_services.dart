@@ -5,6 +5,25 @@ import '../../model/user.dart';
 import '../../model/auth_session.dart';
 import '../dto/user_dto.dart';
 
+class LoginException implements Exception{
+
+  String? message;
+  final int statusCode;
+
+  LoginException({required this.statusCode}){
+
+    if (statusCode == 401){
+
+      message = "Invalid credentials";
+
+    } else {
+
+      message = "Connection lost, check your internet";
+
+    }
+  }
+}
+
 
 class AuthenticationService {
 
@@ -32,7 +51,7 @@ class AuthenticationService {
 
     if (response.statusCode != 200){ //check for error
 
-      throw Exception("Error! Status code: ${response.statusCode}");
+      throw LoginException(statusCode: response.statusCode);
 
     }
 
