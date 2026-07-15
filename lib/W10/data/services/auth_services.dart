@@ -1,24 +1,24 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../model/user.dart';
 import '../../model/auth_session.dart';
 import '../dto/user_dto.dart';
 
 class LoginException implements Exception{
 
-  String? message;
+  late final String message;
   final int statusCode;
 
   LoginException({required this.statusCode}){
 
-    if (statusCode == 401){
+    switch(statusCode){
 
-      message = "Invalid credentials";
-
-    } else {
-
-      message = "Connection lost, check your internet";
+      case 401:
+        message = "Invalid credentials";
+      default:
+        message = "Login failed";
 
     }
   }
@@ -29,6 +29,9 @@ class AuthenticationService {
 
   static final AuthenticationService instance = AuthenticationService._(); //singleton instance
   final Uri urlBase = Uri.parse('http://localhost:3000');
+  
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  static const String _tokenKey = 'auth_token';
 
   AuthSession? session; //shared session
 
@@ -63,6 +66,11 @@ class AuthenticationService {
     
     final User user = UserDto.fromJson(decodedToken); // use the decoded payload to create User
 
+    await _storage.write(
+      key: _tokenKey, 
+      value: token
+    );
+
     final DateTime expiration = user.expiration; // reuse user's expiration
 
     print("Response Body: $json\n\n Token String: $token\n\n Decoded JWT Payload: $decodedToken");
@@ -76,12 +84,60 @@ class AuthenticationService {
     return true;
   }
 
-  void logout(){
+  Future<void> logout() async {
 
     session = null;
+    await _storage.delete(key: _tokenKey);
 
   }
+
+  Future<bool> restoreSession() async{
+
+    final String? token  = await _storage.read(key: _tokenKey); //check for token
+    
+
+    if (token != null){ // if exist check expiration
+
+      try {
+
+        final bool isExpired = JwtDecoder.isExpired(token);
+
+        if (isExpired){ // if expired, delete token
+
+          session = null;
+          await _storage.delete(key: _tokenKey);
+          return false;
+
+        }
+
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token); // if success, decode and reconstruct User and AuthSession
+
+        final User user = UserDto.fromJson(decodedToken);
+
+        final DateTime expiration = user.expiration;
+
+        session = AuthSession(
+          user: user, 
+          token: token, 
+          expiration: expiration,
+        );
+
+      return true;
+
+      } catch(_) { // if any erros, null-session and delete token
+
+        session = null;
+        await _storage.delete(key: _tokenKey);
+        return false;
+
+      }
+    }
+
+    return false; // if token don't exist
+  }
 }
+
+
 
 // void main() async {
 

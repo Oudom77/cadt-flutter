@@ -44,9 +44,9 @@ class ScoresRepository {
 
 }
 
-void main() async {
+// void main() async {
 
-  ScoresRepository instance = ScoresRepository();
-  List<Score> score = await instance.getScores("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMSIsIm5hbWUiOiJKb2huIiwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3ODM5NjUwMTksImV4cCI6MTc4Mzk2NTEzOX0.Cr4EtX_v0MP0-HJpjYPsuHWPc4DNFfsz7C0ntKT4f6k");
-  print(score);
-}
+//   ScoresRepository instance = ScoresRepository();
+//   List<Score> score = await instance.getScores("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMSIsIm5hbWUiOiJKb2huIiwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3ODM5NjUwMTksImV4cCI6MTc4Mzk2NTEzOX0.Cr4EtX_v0MP0-HJpjYPsuHWPc4DNFfsz7C0ntKT4f6k");
+//   print(score);
+// }

@@ -17,18 +17,64 @@ class _AppScreenState extends State<AppScreen> {
 
   final AuthenticationService _authService = AuthenticationService.instance;
 
-  AsyncData<List<Score>> asyncState = AsyncData.notStarted();
+  AsyncData<List<Score>> asyncState = AsyncData.loading();
 
-  void _onLogout(){
+  @override
+  void initState() {
+    super.initState();
+    _initSession();
+  }
+
+  Future<void> _initSession() async {
+
+    try {
+
+      final bool restoreSuccess = await _authService.restoreSession();
+
+      if (!mounted){ // Checks if the current state is displayed, or closed
+        return;
+      }
+
+      if (restoreSuccess){
+
+        await _onLogin();
+
+      } else {
+
+        setState(() {
+          asyncState = AsyncData.notStarted();
+        });
+
+      }
+
+    } catch (e){
+
+      if (!mounted){ // Checks if the current state is displayed, or closed
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.error("$e");
+      });
+
+    }
+  }
+
+  Future<void> _onLogout() async {
+
+    await _authService.logout(); // await in order to wait for secure storage to delete token
+
+    if (!mounted){ // Checks if the current state is displayed
+      return;
+    }
 
     setState(() {
       asyncState = AsyncData.notStarted();
-      _authService.logout();
     });
 
   }
 
-  void _onLogin() async {
+  Future<void> _onLogin() async {
 
     final session = _authService.session; 
 
@@ -38,7 +84,8 @@ class _AppScreenState extends State<AppScreen> {
 
     }
 
-    String token = session.token;
+    final String token = session.token;
+
     try {
 
       setState(() {
@@ -47,11 +94,19 @@ class _AppScreenState extends State<AppScreen> {
 
       List<Score> scoreList = await ScoresRepository().getScores(token); 
 
+      if (!mounted){ // Checks if the current state is displayed after fetching score
+        return;
+      }
+
       setState(() {
         asyncState = AsyncData.success(scoreList);
       });
 
     } on Exception catch(e){
+
+      if (!mounted){ // Checks if the current state is displayed after fetching score
+        return;
+      }
 
       setState(() {
         asyncState = AsyncData.error("$e");
