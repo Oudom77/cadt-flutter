@@ -114,6 +114,42 @@ class _AppScreenState extends State<AppScreen> {
     }
   }
 
+  Future<void> _onSubmit(ScoreInput input) async {
+
+    try {
+
+      final List<Score> newList = asyncState.value!;
+
+      setState(() {
+        asyncState = AsyncData.loading();
+      });
+
+      final Score score = await ScoresRepository().createScore(_authService.session!.token, input);
+
+      if (!mounted){
+        return;
+      }
+
+      newList.add(score);
+      
+      setState(() {
+        asyncState = AsyncData.success(newList);
+      });
+
+    } catch (e){
+
+      if (!mounted){
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.error("$e");
+      });
+
+    }
+    
+  }
+
   Widget get content {
 
     switch(asyncState.status) {
@@ -125,7 +161,12 @@ class _AppScreenState extends State<AppScreen> {
         return CircularProgressIndicator();
 
       case AsyncStatus.success:
-        return ScoresScreen(onLogout: _onLogout, scoreList: asyncState.value!, username: _authService.session!.user.username,);
+        return ScoresScreen(
+          onLogout: _onLogout, 
+          scoreList: asyncState.value!, 
+          username: _authService.session!.user.username, 
+          onSubmit: _onSubmit,
+        );
 
       case AsyncStatus.error:
         return Scaffold(

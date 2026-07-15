@@ -1,4 +1,5 @@
 import 'package:app_cadt/W10/data/dto/scores_dto.dart';
+import 'package:app_cadt/W10/data/services/auth_services.dart';
 import 'package:app_cadt/W10/model/scores.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -42,9 +43,35 @@ class ScoresRepository {
 
   }
 
-  Future<void> createScore() async {
+  Future<Score> createScore(String token, ScoreInput input) async {
 
-    throw Exception();
+    final Uri scoreUrl = baseUrl.replace(path: "scores");
+
+    final Map<String, dynamic> scoreInput = {
+      "title": input.title,
+      "value": input.value,
+    };
+
+    final http.Response response = await http.post(
+      scoreUrl,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(scoreInput)
+    );
+
+    if (response.statusCode != 201){
+
+      throw Exception("Status Code: ${response.statusCode}");
+
+    }
+
+    final Map<String, dynamic> json = jsonDecode(response.body);
+
+    final Score score = ScoreDto.fromJson(json);
+
+    return score;
 
   }
 

@@ -12,3 +12,17 @@ class Score {
   }
 
 }
+
+class ScoreInput {
+
+  final String title;
+  final int value;
+
+  const ScoreInput({required this.title, required this.value});
+
+  @override
+  String toString() {
+    return "Title: $title  |  Value: $value";
+  }
+  
+}

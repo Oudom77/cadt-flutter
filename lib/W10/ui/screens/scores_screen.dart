@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../model/scores.dart';
+import './score_form.dart';
 
-class ScoresScreen extends StatelessWidget{
+class ScoresScreen extends StatefulWidget{
 
   final VoidCallback onLogout;
+  final Future<void> Function(ScoreInput) onSubmit;
   final String username;
   final List<Score> scoreList;
 
-  const ScoresScreen({super.key, required this.onLogout, required this.scoreList, required this.username});
+  const ScoresScreen({super.key, required this.onLogout, required this.scoreList, required this.username, required this.onSubmit});
 
+  @override
+  State<ScoresScreen> createState() => _ScoresScreenState();
+}
+
+class _ScoresScreenState extends State<ScoresScreen> {
   Widget get content {
 
-    if (scoreList.isEmpty){
+    if (widget.scoreList.isEmpty){
 
       return Center(
         child: Text(
@@ -26,7 +33,7 @@ class ScoresScreen extends StatelessWidget{
 
     return Expanded(
       child: ListView.builder(
-        itemCount: scoreList.length,
+        itemCount: widget.scoreList.length,
         itemBuilder: (context, index){
       
           return listTile(index);
@@ -50,17 +57,37 @@ class ScoresScreen extends StatelessWidget{
         mainAxisAlignment: .spaceBetween,
         children: [
           Text(
-            scoreList[index].title,
+            widget.scoreList[index].title,
             style: TextStyle(
               fontSize: 24
             ),
           ),
           Text(
-            "${scoreList[index].value} / 100"
+            "${widget.scoreList[index].value} / 100"
           )
         ],
       ),
     );
+  }
+
+  void _createForm() async {
+
+    final ScoreInput? scoreInput = await Navigator.push(
+      context, 
+      MaterialPageRoute(builder: 
+        (context) => ScoreForm()
+      )
+    );
+
+    if (scoreInput == null){
+      return;
+    }
+    print("returned from form");
+
+    print(scoreInput);
+
+    await widget.onSubmit(scoreInput);
+
   }
 
   @override
@@ -70,14 +97,14 @@ class ScoresScreen extends StatelessWidget{
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 104, 74, 212),
         title: Text(
-          "Welcome $username!!",
+          "Welcome ${widget.username}!!",
           style: TextStyle(
             color: Colors.white
           ),
         ),
         actions: [
           IconButton(
-            onPressed: onLogout, 
+            onPressed: widget.onLogout, 
             icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36,),
           ),
           SizedBox(width: 20,),
@@ -99,7 +126,7 @@ class ScoresScreen extends StatelessWidget{
                   )
                 ),
                   child: IconButton(
-                    onPressed: (){}, 
+                    onPressed: _createForm, 
                     icon: Icon(Icons.add_box_outlined, color: Colors.white, size: 36,)
                   ),
                 ),
@@ -120,6 +147,4 @@ class ScoresScreen extends StatelessWidget{
       ),
     );
   }
-
-
 }
