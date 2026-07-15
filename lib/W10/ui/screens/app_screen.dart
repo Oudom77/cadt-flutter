@@ -104,7 +104,7 @@ class _AppScreenState extends State<AppScreen> {
 
     } on Exception catch(e){
 
-      if (!mounted){ // Checks if the current state is displayed after fetching score
+      if (!mounted){ // Checks if the current state is displayed after error
         return;
       }
 
@@ -125,7 +125,7 @@ class _AppScreenState extends State<AppScreen> {
         return CircularProgressIndicator();
 
       case AsyncStatus.success:
-        return ScoresScreen(onLogout: _onLogout, scoreList: asyncState.value!);
+        return ScoresScreen(onLogout: _onLogout, scoreList: asyncState.value!, username: _authService.session!.user.username,);
 
       case AsyncStatus.error:
         return Scaffold(

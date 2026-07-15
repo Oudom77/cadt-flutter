@@ -36,7 +36,7 @@ const users = [
     },
 ];
 
-const scores = [
+let scores = [
     { id: "score-001", userId: "001", title: "Dart Basics", value: 88 },
     { id: "score-002", userId: "001", title: "Flutter Layout", value: 92 },
     { id: "score-003", userId: "002", title: "Dart Basics", value: 74 },
@@ -68,6 +68,32 @@ function authenticateToken(req, res, next) {
 
         return res.status(401).json({ error: message });
     }
+}
+
+function toScoreResponse(score) {
+    return {
+        id: score.id,
+        title: score.title,
+        value: score.value,
+    };
+}
+
+function validateScoreInput(body) {
+    const { title, value } = body ?? {};
+
+    if (typeof title !== "string" || title.trim().length === 0) {
+        return "Score title is required";
+    }
+
+    if (typeof value !== "number" || !Number.isInteger(value)) {
+        return "Score value must be an integer";
+    }
+
+    if (value < 0 || value > 100) {
+        return "Score value must be between 0 and 100";
+    }
+
+    return null;
 }
 
 app.get("/health", (req, res) => {
@@ -111,9 +137,63 @@ app.post("/login", (req, res) => {
 app.get("/scores", authenticateToken, (req, res) => {
     const userScores = scores
         .filter((score) => score.userId === req.user.id)
-        .map((score) => ({ title: score.title, value: score.value }));
+        .map(toScoreResponse);
 
     return res.json(userScores);
+});
+
+app.post("/scores", authenticateToken, (req, res) => {
+    const validationError = validateScoreInput(req.body);
+
+    if (validationError) {
+        return res.status(400).json({ error: validationError });
+    }
+
+    const newScore = {
+        id: `score-${Date.now()}`,
+        userId: req.user.id,
+        title: req.body.title.trim(),
+        value: req.body.value,
+    };
+
+    scores.push(newScore);
+
+    return res.status(201).json(toScoreResponse(newScore));
+});
+
+app.put("/scores/:id", authenticateToken, (req, res) => {
+    const validationError = validateScoreInput(req.body);
+
+    if (validationError) {
+        return res.status(400).json({ error: validationError });
+    }
+
+    const score = scores.find(
+        (candidate) => candidate.id === req.params.id && candidate.userId === req.user.id,
+    );
+
+    if (!score) {
+        return res.status(404).json({ error: "Score not found" });
+    }
+
+    score.title = req.body.title.trim();
+    score.value = req.body.value;
+
+    return res.json(toScoreResponse(score));
+});
+
+app.delete("/scores/:id", authenticateToken, (req, res) => {
+    const scoreIndex = scores.findIndex(
+        (candidate) => candidate.id === req.params.id && candidate.userId === req.user.id,
+    );
+
+    if (scoreIndex === -1) {
+        return res.status(404).json({ error: "Score not found" });
+    }
+
+    const [deletedScore] = scores.splice(scoreIndex, 1);
+
+    return res.json(toScoreResponse(deletedScore));
 });
 
 app.use((req, res) => {

@@ -42,6 +42,24 @@ class ScoresRepository {
 
   }
 
+  Future<void> createScore() async {
+
+    throw Exception();
+
+  }
+
+  Future<void> updateScore() async {
+
+    throw Exception();
+
+  }
+
+  Future<void> deleteScore() async {
+
+    throw Exception();
+
+  }
+
 }
 
 // void main() async {

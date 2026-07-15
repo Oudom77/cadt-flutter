@@ -124,7 +124,7 @@ class AuthenticationService {
 
       return true;
 
-      } catch(_) { // if any erros, null-session and delete token
+      } catch(e) { // if any erros, null-session and delete token
 
         session = null;
         await _storage.delete(key: _tokenKey);
