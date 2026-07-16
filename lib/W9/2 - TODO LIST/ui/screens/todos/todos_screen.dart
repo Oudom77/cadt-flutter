@@ -69,29 +69,44 @@ class _TodosScreenState extends State<TodosScreen> {
       await repository.updateCompleted(todo.id, newStatus);
       setState(() {
 
-        final List<Todo>? currentList = asyncData.value;
-        final List<Todo> newList = [];
+        // final List<Todo>? currentList = asyncData.value;
+        // final List<Todo> newList = [];
 
-        if (currentList == null){
+        // if (currentList == null){
+        //   return;
+        // }
+
+        // for (Todo currentTodo in currentList){
+
+        //   if (todo.id == currentTodo.id){
+
+        //     newList.add(
+        //       currentTodo.copyWith(newStatus)
+        //     );
+
+        //   } else {
+
+        //     newList.add(currentTodo);
+
+        //   }
+        // }
+
+        // asyncData = AsyncData.success(newList);
+
+        final List<Todo> currentList = [...asyncData.value!];
+
+        final int index = currentList.indexWhere(
+          (currentTodo) => currentTodo.id == todo.id,
+        );
+
+        if (index == -1) {
           return;
         }
 
-        for (Todo currentTodo in currentList){
+        currentList[index] = currentList[index].copyWith(newStatus);
 
-          if (todo.id == currentTodo.id){
+        asyncData = AsyncData.success(currentList);
 
-            newList.add(
-              Todo(id: todo.id, title: todo.title, completed: newStatus)
-            );
-
-          } else {
-
-            newList.add(currentTodo);
-
-          }
-        }
-
-        asyncData = AsyncData.success(newList);
       });
 
     } on RepositoryException catch (e){
@@ -171,7 +186,7 @@ class _TodosScreenState extends State<TodosScreen> {
       itemCount: todos.length,
       itemBuilder: (context, index) =>
           Dismissible(
-            key: ValueKey(todos[index]),
+            key: ValueKey(todos[index].id),
             background: Container(
               color: Colors.white,
             ),

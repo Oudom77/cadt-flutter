@@ -26,6 +26,12 @@ class TodoRepository {
 
     }
 
+    if (response.body == "null"){
+
+      return [];
+
+    }
+
     Map<String, dynamic> json = jsonDecode(response.body); 
 
     List<Todo> toDoList = [];
