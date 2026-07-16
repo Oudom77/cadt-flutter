@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../model/scores.dart';
 
-class ScoreForm extends StatefulWidget{
+class UpdateForm extends StatefulWidget{
 
-  const ScoreForm({super.key});
+  const UpdateForm({super.key});
 
   @override
-  State<ScoreForm> createState() => _ScoreFormState();
+  State<UpdateForm> createState() => _UpdateFormState();
 }
 
-class _ScoreFormState extends State<ScoreForm> {
+class _UpdateFormState extends State<UpdateForm> {
 
   TextEditingController courseTitle = TextEditingController();
   TextEditingController scoreTitle = TextEditingController();
@@ -57,7 +57,7 @@ class _ScoreFormState extends State<ScoreForm> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Form",
+          "Update Form",
         ),
       ),
       body: Center(

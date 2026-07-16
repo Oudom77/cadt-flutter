@@ -118,7 +118,7 @@ class _AppScreenState extends State<AppScreen> {
 
     try {
 
-      final List<Score> newList = asyncState.value!;
+      final List<Score> newList = [...asyncState.value!];
 
       setState(() {
         asyncState = AsyncData.loading();
@@ -147,7 +147,68 @@ class _AppScreenState extends State<AppScreen> {
       });
 
     }
-    
+  }
+
+  Future<void> _onDismissed(int index) async{
+
+    try{
+
+      final List<Score> newList = [...asyncState.value!];
+      final String scoreId = newList[index].id;
+      newList.removeAt(index);
+
+      await ScoresRepository().deleteScore(_authService.session!.token, scoreId);
+
+      if(!mounted){
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.success(newList);
+      });
+      
+    } catch(e){
+
+      if(!mounted){
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.error("$e");
+      });
+
+    }
+  } 
+
+  Future<void> _onPatch(int index, ScoreInput input) async {
+
+    try{
+
+      List<Score> newList = [...asyncState.value!];
+      final String scoreId = newList[index].id;
+      final Score updatedScore = await ScoresRepository().patchScore(token: _authService.session!.token, id: scoreId, input: input);
+      newList[index] = updatedScore;
+
+      if(!mounted){
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.success(newList);
+      });
+
+    } catch (e){
+
+      if(!mounted){
+        return;
+      }
+
+      setState(() {
+        asyncState = AsyncData.error("$e");
+      });
+
+    }
+
   }
 
   Widget get content {
@@ -166,6 +227,8 @@ class _AppScreenState extends State<AppScreen> {
           scoreList: asyncState.value!, 
           username: _authService.session!.user.username, 
           onSubmit: _onSubmit,
+          onDismissedIndex: _onDismissed,
+          onPatchIndex: _onPatch,
         );
 
       case AsyncStatus.error:

@@ -205,15 +205,17 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           borderRadius: BorderRadius.circular(10),
                           color: const Color.fromARGB(255, 71, 20, 192),
                         ),
-                        child: Text(
-                          "Login",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
+                        child: Center(
+                          child: Text(
+                            "Login",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                            ),
+                            
                           ),
-                          
                         ),
                       ),
                     ),

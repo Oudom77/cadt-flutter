@@ -1,5 +1,4 @@
 import 'package:app_cadt/W10/data/dto/scores_dto.dart';
-import 'package:app_cadt/W10/data/services/auth_services.dart';
 import 'package:app_cadt/W10/model/scores.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -75,18 +74,59 @@ class ScoresRepository {
 
   }
 
-  Future<void> updateScore() async {
+  Future<Score> patchScore({required String token, required String id, required ScoreInput input}) async {
 
-    throw Exception();
+    final Uri scoresIdUrl = baseUrl.replace(path: "scores/$id");
 
+    final Map<String, dynamic> scoreJson = {
+
+      "title": input.title,
+      "value": input.value,
+
+    };
+
+    final http.Response response = await http.patch(
+      scoresIdUrl,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(scoreJson),
+    );
+
+    print("Patched: ${response.body}");
+
+    if (response.statusCode != 200){
+
+      throw Exception("Error, failed to patch");
+
+    }
+
+    Map<String, dynamic> json = jsonDecode(response.body);
+    Score score = ScoreDto.fromJson(json);
+    return score;
   }
 
-  Future<void> deleteScore() async {
+  Future<void> deleteScore(String token, String id) async {
 
-    throw Exception();
+    final Uri scoresIdUrl = baseUrl.replace(path: "scores/$id");
 
+    final http.Response response = await http.delete(
+      scoresIdUrl,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      }
+    );
+
+    print("Deleted: ${response.body}");
+
+    if (response.statusCode != 200){
+
+      throw Exception("Error, failed to delete");
+
+    }
   }
-
 }
 
 // void main() async {

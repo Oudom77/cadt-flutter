@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../model/scores.dart';
 import './score_form.dart';
+import './update_form.dart';
 
 class ScoresScreen extends StatefulWidget{
 
   final VoidCallback onLogout;
   final Future<void> Function(ScoreInput) onSubmit;
+  final Future<void> Function(int index) onDismissedIndex;
+  final Future<void> Function(int index, ScoreInput input) onPatchIndex;
   final String username;
   final List<Score> scoreList;
 
-  const ScoresScreen({super.key, required this.onLogout, required this.scoreList, required this.username, required this.onSubmit});
+  const ScoresScreen({super.key, required this.onLogout, required this.scoreList, required this.username, required this.onSubmit, required this.onDismissedIndex, required this.onPatchIndex});
 
   @override
   State<ScoresScreen> createState() => _ScoresScreenState();
@@ -36,7 +39,16 @@ class _ScoresScreenState extends State<ScoresScreen> {
         itemCount: widget.scoreList.length,
         itemBuilder: (context, index){
       
-          return listTile(index);
+          return Dismissible(
+            key: ObjectKey(widget.scoreList[index]),
+            background: Container(
+              color: Colors.purple[200],
+            ),
+            onDismissed: (direction) {
+              widget.onDismissedIndex(index);
+            },
+            child: listTile(index),
+          );
       
         }
       ),
@@ -62,8 +74,21 @@ class _ScoresScreenState extends State<ScoresScreen> {
               fontSize: 24
             ),
           ),
-          Text(
-            "${widget.scoreList[index].value} / 100"
+          Row(
+            children: [
+              Text(
+                "${widget.scoreList[index].value} / 100"
+              ),
+              SizedBox(width: 10,),
+              IconButton(
+                onPressed: (){
+                  _createUpdateForm(index);
+                },
+                icon: Icon(
+                  Icons.edit
+                )
+              ),
+            ],
           )
         ],
       ),
@@ -74,8 +99,8 @@ class _ScoresScreenState extends State<ScoresScreen> {
 
     final ScoreInput? scoreInput = await Navigator.push(
       context, 
-      MaterialPageRoute(builder: 
-        (context) => ScoreForm()
+      MaterialPageRoute(
+        builder: (context) => ScoreForm()
       )
     );
 
@@ -88,6 +113,25 @@ class _ScoresScreenState extends State<ScoresScreen> {
 
     await widget.onSubmit(scoreInput);
 
+  }
+
+  void _createUpdateForm(int index) async {
+
+    final ScoreInput? scoreInput = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UpdateForm()
+      )
+    );
+
+    if (scoreInput == null){
+      return;
+    }
+
+    print("returned from update form");
+    print(scoreInput);
+
+    await widget.onPatchIndex(index, scoreInput);
   }
 
   @override

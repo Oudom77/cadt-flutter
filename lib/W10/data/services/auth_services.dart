@@ -62,24 +62,7 @@ class AuthenticationService {
 
     final String token = json["token"]; // token string
 
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token); // decode jwt payload
-    
-    final User user = UserDto.fromJson(decodedToken); // use the decoded payload to create User
-
-    await _storage.write(
-      key: _tokenKey, 
-      value: token
-    );
-
-    final DateTime expiration = user.expiration; // reuse user's expiration
-
-    print("Response Body: $json\n\n Token String: $token\n\n Decoded JWT Payload: $decodedToken");
-
-    session = AuthSession(
-      user: user, 
-      token: token,
-      expiration: expiration
-    );
+    await jwtDecode(token: token, sessionCheck: false);
 
     return true;
   }
@@ -110,17 +93,7 @@ class AuthenticationService {
 
         }
 
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token); // if success, decode and reconstruct User and AuthSession
-
-        final User user = UserDto.fromJson(decodedToken);
-
-        final DateTime expiration = user.expiration;
-
-        session = AuthSession(
-          user: user, 
-          token: token, 
-          expiration: expiration,
-        );
+        await jwtDecode(token: token, sessionCheck: true);
 
       return true;
 
@@ -135,6 +108,33 @@ class AuthenticationService {
 
     return false; // if token don't exist
   }
+
+  Future<void> jwtDecode({required String token, required bool sessionCheck}) async {
+
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token); // decode jwt payload
+    
+    final User user = UserDto.fromJson(decodedToken); // use the decoded payload to create User
+
+    if (!sessionCheck){
+
+      await _storage.write(
+        key: _tokenKey, 
+        value: token
+      );
+    }
+
+    final DateTime expiration = user.expiration; // reuse user's expiration
+
+    print("Response Body: $json\n\n Token String: $token\n\n Decoded JWT Payload: $decodedToken");
+
+    session = AuthSession(
+      user: user, 
+      token: token,
+      expiration: expiration
+    );
+
+  }
+
 }
 
 
