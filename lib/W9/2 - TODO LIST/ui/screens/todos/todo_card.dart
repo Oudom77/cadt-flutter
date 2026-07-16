@@ -60,7 +60,7 @@ class CheckBox extends StatelessWidget {
   //  Update the widget to disaply both state (completed / not completed) as required
   //
 
-  BoxBorder? get border => null;
+  BoxBorder? get border => Border.all(color: Colors.black);
   Color? get backbroundColor => checked ? AppTheme.greenColor : Colors.red;
   Widget? get innerIcon => checked ? Icon(Icons.check, color: Colors.white) : Icon(Icons.close, color: Colors.white);
 

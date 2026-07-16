@@ -7,14 +7,6 @@ import 'package:http/http.dart' as http;
 class TodoRepository {
   static final global = TodoRepository();   // unique instance
 
-  // final List<Todo> fakeTodos = [
-  //   Todo(id: '1', title: 'Buy groceries', completed: false),
-  //   Todo(id: '2', title: 'Finish Flutter homework', completed: true),
-  //   Todo(id: '3', title: 'Call the dentist', completed: false),
-  //   Todo(id: '4', title: 'Read 20 pages of a book', completed: true),
-  //   Todo(id: '5', title: 'Go for a 30-minute walk', completed: false),
-  // ];
-
   Future<List<Todo>> getTodos() async {
 
     //  TODO
@@ -36,7 +28,7 @@ class TodoRepository {
 
     Map<String, dynamic> json = jsonDecode(response.body); 
 
-    List<dynamic> toDoList = [];
+    List<Todo> toDoList = [];
 
     for (final jsonKey in json.keys){
 
@@ -68,6 +60,62 @@ class TodoRepository {
       throw RepositoryException("No wifi!\nError | Status code: ${response.statusCode}");
 
     }
+  }
+
+  Future<Todo> createTodo(String title) async {
+
+    Uri url = Uri.parse("https://cadt-flutter-default-rtdb.asia-southeast1.firebasedatabase.app/w9/todos.json");
+
+    Map<String, dynamic> todoJson = {
+
+      "title": title,
+      "completed": false,
+
+    };
+
+    http.Response response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(todoJson),
+    );
+
+    if (response.statusCode != 200){
+
+      throw RepositoryException("No wifi!\nError | Status code: ${response.statusCode}");
+
+    }
+
+    Map<String, dynamic> json = jsonDecode(response.body);
+
+    Todo todo = Todo(
+      id: json["name"],
+      title: title,
+      completed: false,
+    );
+
+    return todo;
     
   }
+
+  Future<void> deleteTodo(String id) async {
+    
+    Uri url = Uri.parse("https://cadt-flutter-default-rtdb.asia-southeast1.firebasedatabase.app/w9/todos/$id.json");
+
+    http.Response response = await http.delete(
+      url,
+       headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode != 200){
+
+      throw RepositoryException("No wifi!\nError | Status code: ${response.statusCode}");
+
+    }
+  }
+
+
 }

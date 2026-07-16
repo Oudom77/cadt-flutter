@@ -16,6 +16,7 @@ class TodosScreen extends StatefulWidget {
 
 class _TodosScreenState extends State<TodosScreen> {
   AsyncData<List<Todo>> asyncData = AsyncData.notstarted();
+  TodoRepository repository = TodoRepository.global;
   
 
   @override
@@ -27,18 +28,16 @@ class _TodosScreenState extends State<TodosScreen> {
   }
 
   void _fetchTodos() async {
-    TodoRepository repository = TodoRepository.global;
 
     //  TODO
     // Fetch the list of todos from the repo
     // Handle the success, loading and error cases (catch exception)
     // Update the widget state (asyncData)
 
-    // List<Todo> todos = await repository.getTodos();
-    // setState(() => asyncData = AsyncData.success(todos),);
-
-    asyncData = AsyncData.loading();
-
+    setState(() {
+      asyncData = AsyncData.loading();
+    });
+    
     try {
 
       List<Todo> toDoList = await repository.getTodos();
@@ -56,7 +55,6 @@ class _TodosScreenState extends State<TodosScreen> {
   }
 
   void onUpdateCompleted(Todo todo) async {
-    TodoRepository repository = TodoRepository.global;
 
     //  TODO
     // Update the todo from the repo
@@ -68,13 +66,17 @@ class _TodosScreenState extends State<TodosScreen> {
 
     try{
 
-      repository.updateCompleted(todo.id, newStatus);
+      await repository.updateCompleted(todo.id, newStatus);
       setState(() {
 
         final List<Todo>? currentList = asyncData.value;
         final List<Todo> newList = [];
 
-        for (Todo currentTodo in currentList!){
+        if (currentList == null){
+          return;
+        }
+
+        for (Todo currentTodo in currentList){
 
           if (todo.id == currentTodo.id){
 
@@ -87,10 +89,9 @@ class _TodosScreenState extends State<TodosScreen> {
             newList.add(currentTodo);
 
           }
-
-          asyncData = AsyncData.success(newList);
-
         }
+
+        asyncData = AsyncData.success(newList);
       });
 
     } on RepositoryException catch (e){
@@ -100,7 +101,55 @@ class _TodosScreenState extends State<TodosScreen> {
       });
 
     }
-    
+  }
+
+  void onCreateTodo(String title) async {
+
+    try {
+
+      final List<Todo> newList = [...asyncData.value!];
+
+      final Todo todo = await repository.createTodo(title);
+
+      newList.add(todo);
+
+      setState(() {
+        asyncData = AsyncData.success(newList);
+      });
+
+    } on RepositoryException catch (e){
+
+      setState(() {
+        asyncData = AsyncData.error(e.message);
+      });
+
+    }
+  }
+
+  void onDeleteTodo(int index) async {
+
+    try {
+
+      final List<Todo> newList = [...asyncData.value!];
+
+      final String todoId = newList[index].id;
+
+      await repository.deleteTodo(todoId);
+
+      newList.removeAt(index);
+
+      setState(() {
+        asyncData = AsyncData.success(newList);
+      });
+
+    } on RepositoryException catch (e){
+
+      setState(() {
+        asyncData = AsyncData.error(e.message);
+      });
+
+    }
+
   }
 
   Widget get content => switch (asyncData.status) {
@@ -121,7 +170,16 @@ class _TodosScreenState extends State<TodosScreen> {
     return ListView.builder(
       itemCount: todos.length,
       itemBuilder: (context, index) =>
-          TodoCard(todo: todos[index], onTap: onUpdateCompleted),
+          Dismissible(
+            key: ValueKey(todos[index]),
+            background: Container(
+              color: Colors.white,
+            ),
+            onDismissed: (direction){
+              onDeleteTodo(index);
+            },
+            child: TodoCard(todo: todos[index], onTap: onUpdateCompleted)
+          ),
     );
   }
 
@@ -140,6 +198,51 @@ class _TodosScreenState extends State<TodosScreen> {
     );
   }
 
+  void _showCreateTodoModal(){
+
+    final TextEditingController titleController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context, 
+      builder: (context) {
+
+        return Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: "Todo Title",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20,),
+              ElevatedButton(
+                onPressed: (){
+
+                  final String title = titleController.text.trim();
+
+                  if (title.isEmpty) {
+                    return;
+                  }
+
+                  Navigator.pop(context);
+                  onCreateTodo(title);
+
+                }, 
+                child: Text(
+                  "Add Todo"
+                )
+              )
+            ],
+          ),
+        );
+      }
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,6 +250,14 @@ class _TodosScreenState extends State<TodosScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.backgroundColor,
         title: Text("Welcome !", style: AppTheme.heading),
+        actions: [
+          IconButton(
+            onPressed: (){
+              _showCreateTodoModal();
+            }, 
+            icon: Icon(Icons.add)
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
